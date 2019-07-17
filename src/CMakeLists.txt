@@ -78,8 +78,10 @@ add_library(${LIBRARY_NAME} ${PARSER_LIB_SRC})
 add_library(${LIBRARY_NAME}::${LIBRARY_NAME} ALIAS ${LIBRARY_NAME})
 
 if(${CMAKE_PROJECT_NAME} STREQUAL ${PROJECT_NAME})
-  target_compile_options(${LIBRARY_NAME} PRIVATE -Wall)
-  target_compile_options(${LIBRARY_NAME} PRIVATE -W)
+  if(${CMAKE_COMPILER_IS_GNUCXX})
+    target_compile_options(${LIBRARY_NAME} PRIVATE -Wall)
+    target_compile_options(${LIBRARY_NAME} PRIVATE -W)
+  endif()
 endif()
 
 set_property(
@@ -100,8 +102,10 @@ target_include_directories(${LIBRARY_NAME}
 add_executable(${EXECUTABLE_NAME} main.c)
 
 if(${CMAKE_PROJECT_NAME} STREQUAL ${PROJECT_NAME})
-  target_compile_options(${EXECUTABLE_NAME} PRIVATE -Wall)
-  target_compile_options(${EXECUTABLE_NAME} PRIVATE -W)
+  if(${CMAKE_COMPILER_IS_GNUCXX})
+    target_compile_options(${EXECUTABLE_NAME} PRIVATE -Wall)
+    target_compile_options(${EXECUTABLE_NAME} PRIVATE -W)
+  endif()
 endif()
 
 target_link_libraries(${EXECUTABLE_NAME} ${LIBRARY_NAME})
