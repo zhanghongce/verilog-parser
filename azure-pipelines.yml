@@ -18,9 +18,10 @@ jobs:
   - script: |
       export PATH="/usr/local/opt/bison/bin:$PATH"
       export LDFLAGS="-L/usr/local/opt/bison/lib"
-      mkdir -p build && cd build
+      mkdir -p build 
+      cd build
       cmake ..
-      make
+      cmake --build .
     displayName: 'build'
 - job: Linux
   pool:
@@ -32,9 +33,10 @@ jobs:
       sudo apt-get install flex
     displayName: 'package'
   - script: |
-      mkdir -p build && cd build
+      mkdir -p build 
+      cd build
       cmake .. 
-      make 
+      cmake --build .
     displayName: 'build'
 - job: Windows
   pool:
@@ -44,7 +46,8 @@ jobs:
       choco install winflexbison3
     displayName: 'package'
   - script: |
-      mkdir -p build && cd build
+      md build 
+      cd build
       cmake .. 
       cmake --build .
     displayName: 'build'
