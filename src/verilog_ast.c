@@ -1632,6 +1632,8 @@ ast_module_instantiation * ast_new_module_instantiation(
     tr -> module_parameters = module_parameters;
     tr -> module_instances  = module_instances;
 
+    printf("ast_new_module_instantiation: parameter addr @ %x \n",tr -> module_parameters );
+
     return tr;
 }
 
@@ -1644,10 +1646,25 @@ ast_parameter_override * ast_new_module_parameter_override(
     ast_list                    * parameters,
     ast_parameter_override_type   type
 ) {
+    int idx = 0;
     ast_parameter_override * tr = 
         ast_calloc(1,sizeof(ast_parameter_override));
     tr->module_parameter = parameters;
     tr->type = type;
+
+    printf("-- new parameter override: type: %d, #p:%d, addr:%x\n", tr->type ,  tr->module_parameter->items, tr->module_parameter );
+    for (; idx < tr->module_parameter->items; ++idx) {
+        void * p = ast_list_get(tr->module_parameter, idx);
+        if (tr->type == ORDERED_PARAMETER) {
+            printf(" -- # %d = %s\n", idx, ast_expression_tostring( (ast_expression *)p) );
+        } else
+        {
+            ast_port_connection * c = (ast_port_connection *)p;
+            printf(" -- # %d = .%s(%s)\n", idx, ast_identifier_tostring( c->port_name ), ast_expression_tostring(c->expression) );
+        }
+        
+    }
+    return tr;
 }
 
 /*!
