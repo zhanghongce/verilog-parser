@@ -1651,7 +1651,7 @@ ast_parameter_override * ast_new_module_parameter_override(
         ast_calloc(1,sizeof(ast_parameter_override));
     tr->module_parameter = parameters;
     tr->type = type;
-
+    /*
     printf("-- new parameter override: type: %d, #p:%d, addr:%x\n", tr->type ,  tr->module_parameter->items, tr->module_parameter );
     for (; idx < tr->module_parameter->items; ++idx) {
         void * p = ast_list_get(tr->module_parameter, idx);
@@ -1663,7 +1663,7 @@ ast_parameter_override * ast_new_module_parameter_override(
             printf(" -- # %d = .%s(%s)\n", idx, ast_identifier_tostring( c->port_name ), ast_expression_tostring(c->expression) );
         }
         
-    }
+    } */
     return tr;
 }
 
