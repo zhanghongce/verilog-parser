@@ -7,6 +7,7 @@ pr:
 # File: azure-pipelines.yml
 
 jobs:
+
 - job: macOS
   pool:
     vmImage: 'macOS-10.13'
@@ -24,6 +25,7 @@ jobs:
       cmake --build .
       cmake --build . --target test
     displayName: 'build'
+
 - job: Linux
   pool:
     vmImage: 'ubuntu-16.04'
@@ -40,6 +42,7 @@ jobs:
       cmake --build .
       cmake --build . --target test
     displayName: 'build'
+
 - job: Windows
   pool:
     vmImage: 'vs2017-win2016'
