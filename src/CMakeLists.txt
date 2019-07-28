@@ -37,9 +37,9 @@ else()
 endif()
 
 message(STATUS "Parser Build Flags Debug:   ${CMAKE_C_FLAGS_DEBUG}")
-message(STATUS "Parser Link Flags Debug:   ${CMAKE_EXE_LINKER_FLAGS_DEBUG}")
+message(STATUS "Parser Link Flags Debug:    ${CMAKE_EXE_LINKER_FLAGS_DEBUG}")
 message(STATUS "Parser Build Flags Release: ${CMAKE_C_FLAGS_RELEASE}")
-message(STATUS "Parser Link Flags Release: ${CMAKE_EXE_LINKER_FLAGS_RELEASE}")
+message(STATUS "Parser Link Flags Release:  ${CMAKE_EXE_LINKER_FLAGS_RELEASE}")
 
 # ------------------------------------------------------------------------
 
