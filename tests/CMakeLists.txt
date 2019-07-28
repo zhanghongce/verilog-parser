@@ -2,7 +2,7 @@ FILE(GLOB TEST_VLOG_SRCS *.v)
 
 if ("${CMAKE_SYSTEM_NAME}" MATCHES "[Ww]indows")
   message(STATUS ${CMAKE_BINARY_DIR})
-  set(VLOG_TEST_EXEC "${CMAKE_BINARY_DIR}\\src\\Debug\\verilogparserexec")
+  set(VLOG_TEST_EXEC "${CMAKE_BINARY_DIR}/src/Debug/verilogparserexec.exe")
 else()
   set(VLOG_TEST_EXEC "${CMAKE_BINARY_DIR}/src/verilogparserexec")
 endif()
