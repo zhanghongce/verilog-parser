@@ -22,6 +22,7 @@ jobs:
       cd build
       cmake ..
       cmake --build .
+      cmake --build . --target test
     displayName: 'build'
 - job: Linux
   pool:
@@ -37,6 +38,7 @@ jobs:
       cd build
       cmake .. 
       cmake --build .
+      cmake --build . --target test
     displayName: 'build'
 - job: Windows
   pool:
@@ -50,4 +52,5 @@ jobs:
       cd build
       cmake .. 
       cmake --build .
+      cmake --build . --target test
     displayName: 'build'
