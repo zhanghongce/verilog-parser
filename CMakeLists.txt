@@ -83,7 +83,7 @@ endif()
 # ------------------------------------------------------------------------
 
 if(${VLOG_PARSER_BUILD_DOCS})
-  add_subdirectory(./docs)
+  add_subdirectory(docs)
 endif()
 
 enable_testing()
