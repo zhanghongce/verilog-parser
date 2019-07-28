@@ -129,35 +129,3 @@ install(
   DESTINATION ${VLOG_PARSER_INCLUDE_INSTALL_DIR}
 )
 
-
-# ------------------------------------------------------------------------
-
-if( ${DISABLE_VERILOG_PARSER_TESTS} )
-
-else ()
-    if( ${WITH_COVERAGE} )
-
-        set(CMAKE_C_OUTPUT_EXTENSION_REPLACE 1)
-
-        file(GLOB TEST_FILE_LIST "../tests/*.[vh]")
-            
-        add_test(NAME verilog_parser_coverage
-                 COMMAND parser ${TEST_FILE_LIST}
-                 WORKING_DIRECTORY ../
-        )
-
-    else ()
-
-        file(GLOB TEST_FILE_LIST "../tests/*.[vh]")
-
-        foreach ( TESTFILE ${TEST_FILE_LIST} )
-
-            add_test(NAME verilog_parser_${TESTFILE}
-                     COMMAND parser ${TESTFILE}
-                     WORKING_DIRECTORY ../
-            )
-
-        endforeach ( TESTFILE )
-
-    endif()
-endif ()

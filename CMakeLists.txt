@@ -1,9 +1,8 @@
 cmake_minimum_required(VERSION 3.8)
 
-project(verilogparser VERSION 1.0 LANGUAGES C)
+project(verilogparser VERSION 1.1.0 LANGUAGES C)
 
 option(VLOG_PARSER_BUILD_DOCS "Build documents." OFF)
-option(VLOG_PARSER_BUILD_TEST "Build test." OFF)
 option(VLOG_PARSER_EXPORT_PACAKGE "Export package if enabled." OFF)
 
 # ------------------------------------------------------------------------
@@ -23,7 +22,7 @@ set(VLOG_PARSER_CMAKE_PROJECT_TARGETS_FILE  "${PROJECT_NAME}Targets.cmake")
 
 set(LIBRARY_NAME ${PROJECT_NAME}) 
 
-add_subdirectory(./src)
+add_subdirectory(src)
 
 # ------------------------------------------------------------------------
 # install
@@ -78,7 +77,6 @@ if(NOT TARGET uninstall)
     COMMAND 
       ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/cmake/cmake_uninstall.cmake
   )
-
 endif()
 
 
@@ -88,15 +86,6 @@ if(${VLOG_PARSER_BUILD_DOCS})
   add_subdirectory(./docs)
 endif()
 
-if(${VLOG_PARSER_BUILD_TEST}) 
-  enable_testing()
+enable_testing()
+add_subdirectory(tests)
 
-  add_custom_target(verilogparser-test
-    COMMAND ./bin/run-tests.sh
-    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-    DEPENDS ${EXECUTABLE_NAME}
-    COMMENT "Running Test Suite"
-    VERBATIM
-  )
-
-endif()
