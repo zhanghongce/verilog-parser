@@ -1,8 +1,5 @@
 message(STATUS "Build Type: ${CMAKE_BUILD_TYPE}")
 
-#set(LIBRARY_NAME    verilogparser)
-set(EXECUTABLE_NAME verilogparserexec)
-
 FIND_PACKAGE(BISON 3.0.4 REQUIRED)
 FIND_PACKAGE(FLEX 2.5.35 REQUIRED)
 
@@ -37,9 +34,9 @@ else()
 endif()
 
 message(STATUS "Parser Build Flags Debug:   ${CMAKE_C_FLAGS_DEBUG}")
-message(STATUS "Parser Link Flags Debug:   ${CMAKE_EXE_LINKER_FLAGS_DEBUG}")
+message(STATUS "Parser Link Flags Debug:    ${CMAKE_EXE_LINKER_FLAGS_DEBUG}")
 message(STATUS "Parser Build Flags Release: ${CMAKE_C_FLAGS_RELEASE}")
-message(STATUS "Parser Link Flags Release: ${CMAKE_EXE_LINKER_FLAGS_RELEASE}")
+message(STATUS "Parser Link Flags Release:  ${CMAKE_EXE_LINKER_FLAGS_RELEASE}")
 
 # ------------------------------------------------------------------------
 

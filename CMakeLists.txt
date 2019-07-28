@@ -21,6 +21,7 @@ set(VLOG_PARSER_CMAKE_PROJECT_TARGETS_FILE  "${PROJECT_NAME}Targets.cmake")
 # ------------------------------------------------------------------------
 
 set(LIBRARY_NAME ${PROJECT_NAME}) 
+set(EXECUTABLE_NAME "${LIBRARY_NAME}exec")
 
 add_subdirectory(src)
 
@@ -83,7 +84,7 @@ endif()
 # ------------------------------------------------------------------------
 
 if(${VLOG_PARSER_BUILD_DOCS})
-  add_subdirectory(./docs)
+  add_subdirectory(docs)
 endif()
 
 enable_testing()
