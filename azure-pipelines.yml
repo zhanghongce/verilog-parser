@@ -52,5 +52,6 @@ jobs:
       cd build
       cmake .. 
       cmake --build .
+      cmake --build . --target install
       cmake --build . --target test
     displayName: 'build'
