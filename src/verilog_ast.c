@@ -1632,7 +1632,7 @@ ast_module_instantiation * ast_new_module_instantiation(
     tr -> module_parameters = module_parameters;
     tr -> module_instances  = module_instances;
 
-    printf("ast_new_module_instantiation: parameter addr @ %x \n",tr -> module_parameters );
+    //printf("ast_new_module_instantiation: parameter addr @ %x \n",tr -> module_parameters );
 
     return tr;
 }

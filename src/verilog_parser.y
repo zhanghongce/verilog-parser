@@ -119,6 +119,7 @@
     ast_udp_port                 * udp_port;
     ast_udp_sequential_entry     * udp_seqential_entry;
     ast_wait_statement           * wait_statement;
+    ast_parameter_override       * parameter_override;
 
     char                   boolean;
     char                 * string;
@@ -566,7 +567,7 @@
 %type   <list>                       list_of_net_decl_assignments
 %type   <list>                       list_of_net_identifiers
 %type   <list>                       list_of_param_assignments
-%type   <list>                       list_of_parameter_assignments
+%type   <parameter_override>         list_of_parameter_assignments
 %type   <list>                       list_of_path_delay_expressions
 %type   <list>                       list_of_path_inputs
 %type   <list>                       list_of_path_outputs
@@ -592,8 +593,8 @@
 %type   <list>                       ordered_port_connections
 %type   <list>                       output_terminals
 %type   <list>                       parameter_override
-%type   <list>                       parameter_value_assignment
-%type   <list>                       parameter_value_assignment_o
+%type   <parameter_override>         parameter_value_assignment
+%type   <parameter_override>         parameter_value_assignment_o
 %type   <list>                       pass_enable_switch_instances
 %type   <list>                       pass_switch_instances
 %type   <list>                       path_delay_value
