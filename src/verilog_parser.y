@@ -3952,18 +3952,10 @@ multiple_concatenation :
     $$ = $3;
     $$ -> repeat = $2;
   }
-| OPEN_SQ_BRACE constant_expression concatenation_cont{
-    $$ = $3;
-    $$ -> repeat = $2;
-  }
 ;
 
 constant_multiple_concatenation : 
   OPEN_SQ_BRACE constant_expression constant_concatenation CLOSE_SQ_BRACE{
-    $$ = $3;
-    $$ -> repeat = $2;
-  }
-| OPEN_SQ_BRACE constant_expression constant_concatenation_cont{
     $$ = $3;
     $$ -> repeat = $2;
   }
