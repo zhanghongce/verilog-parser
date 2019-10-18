@@ -3931,7 +3931,7 @@ concatenation_cont :
 ;
 
 constant_concatenation : 
-  OPEN_SQ_BRACE expression constant_concatenation_cont{
+  OPEN_SQ_BRACE constant_expression constant_concatenation_cont{
     $$ = $3;
     ast_extend_concatenation($3,NULL,$2);
   }
@@ -3941,14 +3941,14 @@ constant_concatenation_cont :
   CLOSE_SQ_BRACE{
       $$ = ast_new_empty_concatenation(CONCATENATION_EXPRESSION);
   }
-| COMMA expression concatenation_cont{
+| COMMA constant_expression concatenation_cont{
       $$ = $3;
       ast_extend_concatenation($3,NULL,$2);
   }
 ;
 
 multiple_concatenation :
-  OPEN_SQ_BRACE constant_expression concatenation CLOSE_SQ_BRACE{
+  OPEN_SQ_BRACE expression concatenation CLOSE_SQ_BRACE{
     $$ = $3;
     $$ -> repeat = $2;
   }
