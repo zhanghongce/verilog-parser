@@ -1592,7 +1592,11 @@ net_dec_p_range :
 ;
 
 net_dec_p_delay : 
-  list_of_net_decl_assignments  SEMICOLON{
+  list_of_net_identifiers  SEMICOLON {
+    $$ = ast_new_type_declaration(DECLARE_NET);
+    $$ -> identifiers = $1;
+  }
+| list_of_net_decl_assignments  SEMICOLON{
     $$ = ast_new_type_declaration(DECLARE_NET);
     $$ -> identifiers = $1;
   }
@@ -1809,12 +1813,13 @@ list_of_net_decl_assignments :
 
 list_of_net_identifiers      :
   net_identifier dimensions_o{
+    // interestingly note that dimensions_o is not used at all previously
     $$ = ast_list_new();
-    ast_list_append($$,$1);
+    ast_list_append($$,ast_new_single_assignment(ast_new_lvalue_id(NET_IDENTIFIER,$1),NULL));
   }
 | list_of_net_identifiers COMMA net_identifier dimensions_o{
     $$ = $1;
-    ast_list_append($$,$3);
+    ast_list_append($$,ast_new_single_assignment(ast_new_lvalue_id(NET_IDENTIFIER,$3),NULL));
 }
 ;
 
