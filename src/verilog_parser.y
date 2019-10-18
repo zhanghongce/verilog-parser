@@ -1592,11 +1592,7 @@ net_dec_p_range :
 ;
 
 net_dec_p_delay : 
-  list_of_net_identifiers  SEMICOLON{
-    $$ = ast_new_type_declaration(DECLARE_NET);
-    $$ -> identifiers = $1;
-  }
-| list_of_net_decl_assignments  SEMICOLON{
+  list_of_net_decl_assignments  SEMICOLON{
     $$ = ast_new_type_declaration(DECLARE_NET);
     $$ -> identifiers = $1;
   }

@@ -2422,7 +2422,7 @@ typedef struct ast_port_declaration_t{
     ast_boolean         is_variable;    //!< Variable or net?
     ast_range         * range;          //!< Bus width.
     ast_list          * port_names;     //!< The names of the ports.
-    ast_boolean         is_list_id;     //!< Is it a list of
+    ast_boolean         is_list_id;     //!< Is it a list of identifier
 } ast_port_declaration;
 
 /*!
@@ -2486,7 +2486,7 @@ typedef struct ast_type_declaration_t{
 typedef struct ast_net_declaration_t{
     ast_metadata         meta;       //!< Node metadata.
     ast_net_type         type;       //!< What sort of net is this?
-    ast_identifier       identifier; //!< What is the net called?
+    ast_assignment     * identifier_assignment; //!< What is the net called? and if it is assigned
     ast_delay3         * delay;      //!< Delay characteristics.
     ast_drive_strength * drive;      //!< Drive strength.
     ast_range          * range;      //!< Width of the net.

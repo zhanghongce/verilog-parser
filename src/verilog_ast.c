@@ -2131,7 +2131,7 @@ ast_list * ast_new_net_declaration(
         ast_net_declaration * toadd =ast_calloc(1,sizeof(ast_net_declaration));
         toadd -> meta       = type_dec -> meta;
 
-        toadd -> identifier = ast_list_get(type_dec -> identifiers, i);
+        toadd -> identifier_assignment = ast_list_get(type_dec -> identifiers, i);
         toadd -> type       = type_dec -> net_type;
         toadd -> delay      = type_dec -> delay;
         toadd -> drive      = type_dec -> drive_strength;
