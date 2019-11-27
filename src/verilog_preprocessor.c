@@ -21,6 +21,7 @@ verilog_preprocessor_context * verilog_new_preprocessor_context()
     tr -> macrodefines   = ast_hashtable_new();
     tr -> ifdefs         = ast_stack_new();
     tr -> search_dirs    = ast_list_new();
+    tr -> file_pointers  = ast_stack_new();
 
     // By default, search CWD for include files.
     ast_list_append(tr -> search_dirs,"./");
