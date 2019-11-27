@@ -211,6 +211,7 @@ typedef struct verilog_preprocessor_context_t{
     ast_primitive_strength unconnected_drive_pull; //!< nounconnectedrive
     ast_stack     * ifdefs;         //!< Storage for conditional compile stack.
     ast_list      * search_dirs;    //!< Where to look for include files.
+    ast_stack     * file_pointers;  //!< File pointers for each include/macro
 } verilog_preprocessor_context;
 
 

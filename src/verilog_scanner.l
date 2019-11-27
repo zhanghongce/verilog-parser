@@ -429,6 +429,8 @@ TERNARY             "?"
 <in_include>{STRING}     {
     YY_BUFFER_STATE cur = YY_CURRENT_BUFFER;
 
+    // ast_stack_push(yy_preproc -> current_file, toadd -> filename)
+    // is inside this function call
     verilog_include_directive * id = 
         verilog_preprocessor_include(yytext,yylineno);
 
@@ -438,7 +440,10 @@ TERNARY             "?"
     if(id -> file_found == AST_TRUE)
     {
         FILE * file = fopen(id -> filename, "r");
+        // no need to check file readable again, which has been done in
+        // verilog_preprocessor_include above
 
+        ast_stack_push(yy_preproc -> file_pointers, file);
         YY_BUFFER_STATE n   = yy_create_buffer(file, YY_BUF_SIZE);
         
         cur -> yy_bs_lineno = yylineno; 
@@ -535,7 +540,7 @@ TERNARY             "?"
         // Because later when (EOF) encountered in the macro_value,
         // you will pop, si you should push it now
         ast_stack_push(yy_preproc -> current_file, macro -> file_name);
-
+        ast_stack_push(yy_preproc -> file_pointers, NULL);
         // Switch buffers to expand the macro.
 
         YY_BUFFER_STATE cur = YY_CURRENT_BUFFER;
@@ -761,6 +766,12 @@ TERNARY             "?"
     // We are exiting a file, so pop from the the preprocessor stack of files
     // being parsed.
     ast_stack_pop(yy_preproc -> current_file);
+    if (yy_preproc -> file_pointers -> depth > 0) {
+        FILE * fp = (FILE *) ast_stack_peek(yy_preproc -> file_pointers);
+        ast_stack_pop(yy_preproc -> file_pointers);
+        if (fp)
+            fclose(fp);
+    }
 
 
     if ( !YY_CURRENT_BUFFER )
