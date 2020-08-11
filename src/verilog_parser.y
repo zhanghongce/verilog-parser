@@ -1184,9 +1184,9 @@ port_dir          :
 ;
 
 port_declaration  : 
-  attribute_instances inout_declaration {$$ = $1;}
-| attribute_instances input_declaration {$$ = $1;}
-| attribute_instances output_declaration {$$ = $1;}
+  inout_declaration {$$ = $1;}
+| input_declaration {$$ = $1;}
+| output_declaration {$$ = $1;}
 ;
 
 ports           : {$$ = ast_list_new();}
