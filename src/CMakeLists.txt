@@ -1,8 +1,5 @@
 message(STATUS "Build Type: ${CMAKE_BUILD_TYPE}")
 
-#set(LIBRARY_NAME    verilogparser)
-set(EXECUTABLE_NAME parser)
-
 FIND_PACKAGE(BISON 3.0.4 REQUIRED)
 FIND_PACKAGE(FLEX 2.5.35 REQUIRED)
 
@@ -37,9 +34,9 @@ else()
 endif()
 
 message(STATUS "Parser Build Flags Debug:   ${CMAKE_C_FLAGS_DEBUG}")
-message(STATUS "Parser Link Flags Debug:   ${CMAKE_EXE_LINKER_FLAGS_DEBUG}")
+message(STATUS "Parser Link Flags Debug:    ${CMAKE_EXE_LINKER_FLAGS_DEBUG}")
 message(STATUS "Parser Build Flags Release: ${CMAKE_C_FLAGS_RELEASE}")
-message(STATUS "Parser Link Flags Release: ${CMAKE_EXE_LINKER_FLAGS_RELEASE}")
+message(STATUS "Parser Link Flags Release:  ${CMAKE_EXE_LINKER_FLAGS_RELEASE}")
 
 # ------------------------------------------------------------------------
 
@@ -77,8 +74,17 @@ set(PARSER_LIB_SRC ${BINARY_DIR}/${FLEX_OUTPUT}
 add_library(${LIBRARY_NAME} ${PARSER_LIB_SRC})
 add_library(${LIBRARY_NAME}::${LIBRARY_NAME} ALIAS ${LIBRARY_NAME})
 
-target_compile_options(${LIBRARY_NAME} PRIVATE -Wall)
-target_compile_options(${LIBRARY_NAME} PRIVATE -W)
+if(${CMAKE_PROJECT_NAME} STREQUAL ${PROJECT_NAME})
+  if(${CMAKE_COMPILER_IS_GNUCXX})
+    target_compile_options(${LIBRARY_NAME} PRIVATE -Wall)
+    target_compile_options(${LIBRARY_NAME} PRIVATE -W)
+  endif()
+endif()
+
+set_property(
+  TARGET ${LIBRARY_NAME}
+  PROPERTY POSITION_INDEPENDENT_CODE ON
+)
 
 set_target_properties(${LIBRARY_NAME} PROPERTIES C_EXTENSIONS OFF)
 
@@ -92,8 +98,12 @@ target_include_directories(${LIBRARY_NAME}
 
 add_executable(${EXECUTABLE_NAME} main.c)
 
-target_compile_options(${EXECUTABLE_NAME} PRIVATE -Wall)
-target_compile_options(${EXECUTABLE_NAME} PRIVATE -W)
+if(${CMAKE_PROJECT_NAME} STREQUAL ${PROJECT_NAME})
+  if(${CMAKE_COMPILER_IS_GNUCXX})
+    target_compile_options(${EXECUTABLE_NAME} PRIVATE -Wall)
+    target_compile_options(${EXECUTABLE_NAME} PRIVATE -W)
+  endif()
+endif()
 
 target_link_libraries(${EXECUTABLE_NAME} ${LIBRARY_NAME})
 
@@ -116,35 +126,3 @@ install(
   DESTINATION ${VLOG_PARSER_INCLUDE_INSTALL_DIR}
 )
 
-
-# ------------------------------------------------------------------------
-
-if( ${DISABLE_VERILOG_PARSER_TESTS} )
-
-else ()
-    if( ${WITH_COVERAGE} )
-
-        set(CMAKE_C_OUTPUT_EXTENSION_REPLACE 1)
-
-        file(GLOB TEST_FILE_LIST "../tests/*.[vh]")
-            
-        add_test(NAME verilog_parser_coverage
-                 COMMAND parser ${TEST_FILE_LIST}
-                 WORKING_DIRECTORY ../
-        )
-
-    else ()
-
-        file(GLOB TEST_FILE_LIST "../tests/*.[vh]")
-
-        foreach ( TESTFILE ${TEST_FILE_LIST} )
-
-            add_test(NAME verilog_parser_${TESTFILE}
-                     COMMAND parser ${TESTFILE}
-                     WORKING_DIRECTORY ../
-            )
-
-        endforeach ( TESTFILE )
-
-    endif()
-endif ()

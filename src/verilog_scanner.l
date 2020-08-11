@@ -16,6 +16,7 @@
 %option yylineno
 %option nodefault 
 %option noyywrap 
+%option nounistd
 
 /* Pre-processor definitions */
 CD_DEFAULT_NETTYPE     "`default_nettype"
@@ -175,6 +176,7 @@ TRI0                "tri0"
 TRI1                "tri1"
 TRI                 "tri"
 TRIAND              "triand"
+NONE                "none"
 TRIOR               "trior"
 TRIREG              "trireg"
 UNSIGNED            "unsigned"
@@ -328,7 +330,7 @@ TERNARY             "?"
 <in_default_nettype>{TRIOR}   {
     BEGIN(INITIAL); 
     verilog_preproc_default_net(yy_preproc -> token_count, 
-        yylineno, NET_TYPE_TRIOR  );
+        yylineno, NET_TYPE_NONE  );
     }
 <in_default_nettype>{TRIREG}     {
     BEGIN(INITIAL); 
@@ -359,6 +361,11 @@ TERNARY             "?"
     BEGIN(INITIAL); 
     verilog_preproc_default_net(yy_preproc -> token_count, 
         yylineno, NET_TYPE_WOR    );
+    }
+<in_default_nettype>{NONE}    {
+    BEGIN(INITIAL); 
+    verilog_preproc_default_net(yy_preproc -> token_count, 
+        yylineno, NET_TYPE_NONE    );
     }
 
 {CD_TIMESCALE}           {
@@ -422,6 +429,8 @@ TERNARY             "?"
 <in_include>{STRING}     {
     YY_BUFFER_STATE cur = YY_CURRENT_BUFFER;
 
+    // ast_stack_push(yy_preproc -> current_file, toadd -> filename)
+    // is inside this function call
     verilog_include_directive * id = 
         verilog_preprocessor_include(yytext,yylineno);
 
@@ -431,7 +440,10 @@ TERNARY             "?"
     if(id -> file_found == AST_TRUE)
     {
         FILE * file = fopen(id -> filename, "r");
+        // no need to check file readable again, which has been done in
+        // verilog_preprocessor_include above
 
+        ast_stack_push(yy_preproc -> file_pointers, file);
         YY_BUFFER_STATE n   = yy_create_buffer(file, YY_BUF_SIZE);
         
         cur -> yy_bs_lineno = yylineno; 
@@ -528,7 +540,7 @@ TERNARY             "?"
         // Because later when (EOF) encountered in the macro_value,
         // you will pop, si you should push it now
         ast_stack_push(yy_preproc -> current_file, macro -> file_name);
-
+        ast_stack_push(yy_preproc -> file_pointers, NULL);
         // Switch buffers to expand the macro.
 
         YY_BUFFER_STATE cur = YY_CURRENT_BUFFER;
@@ -754,6 +766,12 @@ TERNARY             "?"
     // We are exiting a file, so pop from the the preprocessor stack of files
     // being parsed.
     ast_stack_pop(yy_preproc -> current_file);
+    if (yy_preproc -> file_pointers -> depth > 0) {
+        FILE * fp = (FILE *) ast_stack_peek(yy_preproc -> file_pointers);
+        ast_stack_pop(yy_preproc -> file_pointers);
+        if (fp)
+            fclose(fp);
+    }
 
 
     if ( !YY_CURRENT_BUFFER )
@@ -770,5 +788,3 @@ TERNARY             "?"
 .                      {
     EMIT_TOKEN(ANY);
 }
-
-%%

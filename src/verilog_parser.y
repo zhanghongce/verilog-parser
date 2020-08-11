@@ -119,6 +119,7 @@
     ast_udp_port                 * udp_port;
     ast_udp_sequential_entry     * udp_seqential_entry;
     ast_wait_statement           * wait_statement;
+    ast_parameter_override       * parameter_override;
 
     char                   boolean;
     char                 * string;
@@ -566,7 +567,7 @@
 %type   <list>                       list_of_net_decl_assignments
 %type   <list>                       list_of_net_identifiers
 %type   <list>                       list_of_param_assignments
-%type   <list>                       list_of_parameter_assignments
+%type   <parameter_override>         list_of_parameter_assignments
 %type   <list>                       list_of_path_delay_expressions
 %type   <list>                       list_of_path_inputs
 %type   <list>                       list_of_path_outputs
@@ -592,8 +593,8 @@
 %type   <list>                       ordered_port_connections
 %type   <list>                       output_terminals
 %type   <list>                       parameter_override
-%type   <list>                       parameter_value_assignment
-%type   <list>                       parameter_value_assignment_o
+%type   <parameter_override>         parameter_value_assignment
+%type   <parameter_override>         parameter_value_assignment_o
 %type   <list>                       pass_enable_switch_instances
 %type   <list>                       pass_switch_instances
 %type   <list>                       path_delay_value
@@ -1591,7 +1592,7 @@ net_dec_p_range :
 ;
 
 net_dec_p_delay : 
-  list_of_net_identifiers  SEMICOLON{
+  list_of_net_identifiers  SEMICOLON {
     $$ = ast_new_type_declaration(DECLARE_NET);
     $$ -> identifiers = $1;
   }
@@ -1812,12 +1813,13 @@ list_of_net_decl_assignments :
 
 list_of_net_identifiers      :
   net_identifier dimensions_o{
+    // interestingly note that dimensions_o is not used at all previously
     $$ = ast_list_new();
-    ast_list_append($$,$1);
+    ast_list_append($$,ast_new_single_assignment(ast_new_lvalue_id(NET_IDENTIFIER,$1),NULL));
   }
 | list_of_net_identifiers COMMA net_identifier dimensions_o{
     $$ = $1;
-    ast_list_append($$,$3);
+    ast_list_append($$,ast_new_single_assignment(ast_new_lvalue_id(NET_IDENTIFIER,$3),NULL));
 }
 ;
 
@@ -2657,8 +2659,8 @@ HASH OPEN_BRACKET list_of_parameter_assignments CLOSE_BRACKET {$$=$3;}
 ;
 
 list_of_parameter_assignments : 
-   ordered_parameter_assignments {$$=$1;}
- | named_parameter_assignments {$$=$1;}
+   ordered_parameter_assignments { $$=ast_new_module_parameter_override($1, ORDERED_PARAMETER); /*printf("ORDERED list_of_parameter_assignments : %x\n", $$);*/ }
+ | named_parameter_assignments { ; $$=ast_new_module_parameter_override($1, NAMED_PARAMETER); /* printf("NAMED list_of_parameter_assignments : %x\n", $$);*/ }
  ;
 
 ordered_parameter_assignments : 
@@ -2693,7 +2695,7 @@ module_instances : module_instance{
 ;
 
 ordered_parameter_assignment : expression{
-    $$=$1;
+    $$ = $1;
 };
 
 named_parameter_assignment : 
@@ -3930,7 +3932,7 @@ concatenation_cont :
 ;
 
 constant_concatenation : 
-  OPEN_SQ_BRACE expression constant_concatenation_cont{
+  OPEN_SQ_BRACE constant_expression constant_concatenation_cont{
     $$ = $3;
     ast_extend_concatenation($3,NULL,$2);
   }
@@ -3940,18 +3942,14 @@ constant_concatenation_cont :
   CLOSE_SQ_BRACE{
       $$ = ast_new_empty_concatenation(CONCATENATION_EXPRESSION);
   }
-| COMMA expression concatenation_cont{
+| COMMA constant_expression concatenation_cont{
       $$ = $3;
       ast_extend_concatenation($3,NULL,$2);
   }
 ;
 
 multiple_concatenation :
-  OPEN_SQ_BRACE constant_expression concatenation CLOSE_SQ_BRACE{
-    $$ = $3;
-    $$ -> repeat = $2;
-  }
-| OPEN_SQ_BRACE constant_expression concatenation_cont{
+  OPEN_SQ_BRACE expression concatenation CLOSE_SQ_BRACE{
     $$ = $3;
     $$ -> repeat = $2;
   }
@@ -3959,10 +3957,6 @@ multiple_concatenation :
 
 constant_multiple_concatenation : 
   OPEN_SQ_BRACE constant_expression constant_concatenation CLOSE_SQ_BRACE{
-    $$ = $3;
-    $$ -> repeat = $2;
-  }
-| OPEN_SQ_BRACE constant_expression constant_concatenation_cont{
     $$ = $3;
     $$ -> repeat = $2;
   }
@@ -4639,15 +4633,19 @@ number :
 }
 | UNSIGNED_NUMBER BIN_BASE BIN_VALUE {
     $$ = ast_new_number(BASE_BINARY, REP_BITS, $3);
+    $$->width = ast_string_to_unsigned_number($1);
 }
 | UNSIGNED_NUMBER HEX_BASE HEX_VALUE {
     $$ = ast_new_number(BASE_HEX, REP_BITS, $3);
+    $$->width = ast_string_to_unsigned_number($1);
 }
 | UNSIGNED_NUMBER OCT_BASE OCT_VALUE {
     $$ = ast_new_number(BASE_OCTAL, REP_BITS, $3);
+    $$->width = ast_string_to_unsigned_number($1);
 }
 | UNSIGNED_NUMBER DEC_BASE UNSIGNED_NUMBER{
     $$ = ast_new_number(BASE_DECIMAL, REP_BITS, $3);
+    $$->width = ast_string_to_unsigned_number($1);
 }
 | unsigned_number {$$ = $1;}
 ;

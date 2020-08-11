@@ -1792,6 +1792,33 @@ ast_statement * ast_new_generate_item(
 */
 
 /*! 
+@brief Decribes the parameter instantiation type
+*/
+typedef enum ast_parameter_override_type_e {
+    ORDERED_PARAMETER,
+    NAMED_PARAMETER
+} ast_parameter_override_type;
+
+/*! 
+@brief Decribes the parameter assignment in a module instantiation
+@note This is used to distinguish named assignment/ordered assignment
+*/
+typedef struct ast_parameter_override_t{
+    ast_list                  * module_parameter;
+    ast_parameter_override_type type;
+} ast_parameter_override;
+
+
+/*!
+@brief Creates and returns a new set of module instances with shared
+parameters.
+*/
+ast_parameter_override * ast_new_module_parameter_override(
+    ast_list                    * parameters,
+    ast_parameter_override_type   type
+);
+
+/*! 
 @brief Describes the instantiation of one or more modules of the same type with
 the same parameters.
 @details If the resolved member is true, then you can access the declaration
@@ -1806,9 +1833,11 @@ typedef struct ast_module_instantiation_t {
         ast_identifier  module_identifer; //!< The module being instanced.
         ast_module_declaration * declaration; //!< The module instanced.
     };
-    ast_list              * module_parameters;
+    ast_parameter_override* module_parameters;
     ast_list              * module_instances;
 } ast_module_instantiation;
+
+
 
 /*!
 @brief Creates and returns a new set of module instances with shared
@@ -1816,7 +1845,7 @@ parameters.
 */
 ast_module_instantiation * ast_new_module_instantiation(
     ast_identifier          module_identifer,
-    ast_list              * module_parameters,
+    ast_parameter_override* module_parameters,
     ast_list              * module_instances
 );
 
@@ -1850,6 +1879,7 @@ typedef struct ast_port_connection_t{
     ast_identifier   port_name;
     ast_expression * expression;
 } ast_port_connection;
+
 
 /*!
 @brief Creates and returns a new port connection representation.
@@ -2392,7 +2422,7 @@ typedef struct ast_port_declaration_t{
     ast_boolean         is_variable;    //!< Variable or net?
     ast_range         * range;          //!< Bus width.
     ast_list          * port_names;     //!< The names of the ports.
-    ast_boolean         is_list_id;     //!< Is it a list of
+    ast_boolean         is_list_id;     //!< Is it a list of identifier
 } ast_port_declaration;
 
 /*!
@@ -2456,7 +2486,7 @@ typedef struct ast_type_declaration_t{
 typedef struct ast_net_declaration_t{
     ast_metadata         meta;       //!< Node metadata.
     ast_net_type         type;       //!< What sort of net is this?
-    ast_identifier       identifier; //!< What is the net called?
+    ast_assignment     * identifier_assignment; //!< What is the net called? and if it is assigned
     ast_delay3         * delay;      //!< Delay characteristics.
     ast_drive_strength * drive;      //!< Drive strength.
     ast_range          * range;      //!< Width of the net.
@@ -3333,6 +3363,13 @@ struct ast_node_t
 @deprecated The AST Node was only ever temporary, don't add new stuff with it.
 */
 ast_node * ast_node_new();
+
+
+/*!
+@brief Convert an UNSIGNED_NUMBER to integer
+@param [in] the string to convert
+*/
+unsigned ast_string_to_unsigned_number(const char * str);
 
 
 /*! @} */

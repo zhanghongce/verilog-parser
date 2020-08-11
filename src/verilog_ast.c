@@ -1613,13 +1613,14 @@ ast_generate_block * ast_new_generate_block(
 }
 
 
+
 /*!
 @brief Creates and returns a new set of module instances with shared
 parameters.
 */
 ast_module_instantiation * ast_new_module_instantiation(
     ast_identifier          module_identifer,
-    ast_list              * module_parameters,
+    ast_parameter_override* module_parameters,
     ast_list              * module_instances
 ){
     ast_module_instantiation * tr = 
@@ -1631,6 +1632,38 @@ ast_module_instantiation * ast_new_module_instantiation(
     tr -> module_parameters = module_parameters;
     tr -> module_instances  = module_instances;
 
+    //printf("ast_new_module_instantiation: parameter addr @ %x \n",tr -> module_parameters );
+
+    return tr;
+}
+
+
+/*!
+@brief Creates and returns a new set of module instances with shared
+parameters.
+*/
+ast_parameter_override * ast_new_module_parameter_override(
+    ast_list                    * parameters,
+    ast_parameter_override_type   type
+) {
+    int idx = 0;
+    ast_parameter_override * tr = 
+        ast_calloc(1,sizeof(ast_parameter_override));
+    tr->module_parameter = parameters;
+    tr->type = type;
+    /*
+    printf("-- new parameter override: type: %d, #p:%d, addr:%x\n", tr->type ,  tr->module_parameter->items, tr->module_parameter );
+    for (; idx < tr->module_parameter->items; ++idx) {
+        void * p = ast_list_get(tr->module_parameter, idx);
+        if (tr->type == ORDERED_PARAMETER) {
+            printf(" -- # %d = %s\n", idx, ast_expression_tostring( (ast_expression *)p) );
+        } else
+        {
+            ast_port_connection * c = (ast_port_connection *)p;
+            printf(" -- # %d = .%s(%s)\n", idx, ast_identifier_tostring( c->port_name ), ast_expression_tostring(c->expression) );
+        }
+        
+    } */
     return tr;
 }
 
@@ -2098,7 +2131,7 @@ ast_list * ast_new_net_declaration(
         ast_net_declaration * toadd =ast_calloc(1,sizeof(ast_net_declaration));
         toadd -> meta       = type_dec -> meta;
 
-        toadd -> identifier = ast_list_get(type_dec -> identifiers, i);
+        toadd -> identifier_assignment = ast_list_get(type_dec -> identifiers, i);
         toadd -> type       = type_dec -> net_type;
         toadd -> delay      = type_dec -> delay;
         toadd -> drive      = type_dec -> drive_strength;
@@ -2830,6 +2863,26 @@ ast_library_descriptions * ast_new_library_description(
     return tr;
 }
 
+/*!
+@brief Convert an UNSIGNED_NUMBER to integer
+@param [in] the string to convert
+*/
+unsigned ast_string_to_unsigned_number(
+    const char * str //!< the string
+) {
+    size_t len = strlen(str);
+    size_t idx, target_idx;
+    unsigned return_val;
+    char * temp_str = calloc(len, sizeof(char)+1);
+    for (idx = 0, target_idx = 0; idx < len; ++idx) {
+        if (str[idx] != '_')
+            temp_str[target_idx++] = str[idx];
+    } // filter of underscore
+    return_val = atoi(temp_str);
+    free(temp_str);
+    return return_val;
+}
+
 
 /*!
 @brief Creates a new number representation object.
@@ -2846,6 +2899,7 @@ ast_number * ast_new_number(
     tr -> base = base;
     tr -> representation = representation;
     tr -> as_bits = ast_strdup(digits);
+    tr -> width = 0; // this is the default value if its width is not specified
 
     return tr;
 }
@@ -2868,12 +2922,12 @@ char * ast_number_tostring(
             tr = n -> as_bits;
             break;
         case REP_INTEGER:
-            tr = calloc(11,sizeof(char));
-            sprintf(tr, "%d", n-> as_int);
+            tr = ast_calloc(11,sizeof(char));
+            snprintf(tr, 10, "%d", n-> as_int);
             break;
         case REP_FLOAT:
-            tr = calloc(21,sizeof(char));
-            sprintf(tr, "%20f", n -> as_float);
+            tr = ast_calloc(25,sizeof(char));
+            snprintf(tr, 24, "%20f", n -> as_float);
             break;
         default:
             tr = "NULL";
